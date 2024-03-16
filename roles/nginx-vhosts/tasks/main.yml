@@ -1,0 +1,36 @@
+---
+- name: Install nginx
+  apt:
+    update_cache: True
+    name: nginx
+    state: latest
+
+- name: Copy nginx config from template
+  template:
+    src: 'site.conf.j2'
+    dest: '/etc/nginx/conf.d/site-{{ item }}.conf'
+    owner: root
+    group: root
+    mode: '0644'
+  loop: '{{ sites }}'
+  notify: restart nginx
+
+- name: Create sites folders
+  file:
+    path: '/var/www/{{ item }}/'
+    state: directory
+  loop: '{{ sites }}'
+
+- name: Copy index from template
+  template:
+    src: 'index.html.j2'
+    dest: '/var/www/{{ item }}/index.html'
+    owner: root
+    group: root
+    mode: '0644'
+  loop: '{{ sites }}'
+
+- name: Force nginx restart
+  systemd:
+    name: nginx
+    state: restarted

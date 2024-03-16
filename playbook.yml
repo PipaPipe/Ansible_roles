@@ -1,0 +1,16 @@
+---
+- name: Install nginx with Virtual hosts
+  hosts: webservers
+  remote_user: ubuntu
+  become: true
+  become_method: sudo
+  
+  vars:
+    sites:
+    - "etis.com"
+    - "fizfak.com"
+    - "mehmat.ru"
+
+  roles:
+  - nginx-vhosts
+  
